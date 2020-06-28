@@ -29,10 +29,11 @@ class BasketTest {
                 aSingleItemPricedPerUnit(),
                 multipleItemsPricedPerUnit(),
                 buyOneGetOneFree(),
+                buyTwoItemsForOnePound(),
                 buyThreeItemsPerPriceOfTwo(),
                 aSingleItemPricedByWeight(),
                 multipleItemsPricedByWeight(),
-                multipleItemsPricedByWeight(DiscountScheme.ONE_KG_HALF_PRICE)
+                vegetablesHalfPriceByWeight()
         );
     }
 
@@ -48,10 +49,10 @@ class BasketTest {
         );
     }
 
-    private static Arguments multipleItemsPricedByWeight(DiscountScheme discountScheme) {
-        return Arguments.of("multiple weighed items with discount", "6.84",
-                Arrays.asList(twoKilosAndTwoFiftyGramsOfAmericanSweets(discountScheme), twoHundredGramsOfPickAndMix(discountScheme)),
-                discountScheme
+    private static Arguments vegetablesHalfPriceByWeight() {
+        return Arguments.of("vegetables weighed items with half price discount per kilo", "2.99",
+                Arrays.asList(aKiloAndTwoFiftyGramsOfPotatos(DiscountScheme.ONE_KG_HALF_PRICE)),
+                DiscountScheme.ONE_KG_HALF_PRICE
         );
     }
 
@@ -63,6 +64,11 @@ class BasketTest {
     private static Arguments buyOneGetOneFree() {
         return Arguments.of("buy two items per price of one", "1.55",
                 nPackOfDigestives(2), DiscountScheme.BUY_ONE_GET_ONE);
+    }
+
+    private static Arguments buyTwoItemsForOnePound() {
+        return Arguments.of("buy two items for one pound", "1.00",
+                Arrays.asList(aCanOfCoke(), aCanOfCoke()), DiscountScheme.TWO_FOR_ONE_POUND);
     }
 
     private static Arguments buyThreeItemsPerPriceOfTwo() {
@@ -106,8 +112,12 @@ class BasketTest {
         return aKiloOfAmericanSweets().weighing(new BigDecimal(".25"));
     }
 
-    private static Item twoKilosAndTwoFiftyGramsOfAmericanSweets(DiscountScheme discountScheme) {
-        return aKiloOfAmericanSweets().weighing(new BigDecimal("2.25"), discountScheme);
+    private static WeighedProduct aKiloOfPotatos() {
+        return new WeighedProduct(new BigDecimal("3.99"));
+    }
+
+    private static Item aKiloAndTwoFiftyGramsOfPotatos(DiscountScheme discountScheme) {
+        return aKiloOfPotatos().weighing(new BigDecimal("1.25"), discountScheme);
     }
 
     private static WeighedProduct aKiloOfPickAndMix() {
@@ -116,9 +126,5 @@ class BasketTest {
 
     private static Item twoHundredGramsOfPickAndMix() {
         return aKiloOfPickAndMix().weighing(new BigDecimal(".2"));
-    }
-
-    private static Item twoHundredGramsOfPickAndMix(DiscountScheme discountScheme) {
-        return aKiloOfPickAndMix().weighing(new BigDecimal(".2"), discountScheme);
     }
 }
