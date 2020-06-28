@@ -8,7 +8,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -29,6 +28,8 @@ class BasketTest {
                 noItems(),
                 aSingleItemPricedPerUnit(),
                 multipleItemsPricedPerUnit(),
+                buyOneGetOneFree(),
+                buyThreeItemsPerPriceOfTwo(),
                 aSingleItemPricedByWeight(),
                 multipleItemsPricedByWeight(),
                 multipleItemsPricedByWeight(DiscountScheme.ONE_KG_HALF_PRICE)
@@ -59,6 +60,16 @@ class BasketTest {
                 Arrays.asList(aPackOfDigestives(), aPintOfMilk()), DiscountScheme.NO_DISCOUNT);
     }
 
+    private static Arguments buyOneGetOneFree() {
+        return Arguments.of("buy two items per price of one", "1.55",
+                nPackOfDigestives(2), DiscountScheme.BUY_ONE_GET_ONE);
+    }
+
+    private static Arguments buyThreeItemsPerPriceOfTwo() {
+        return Arguments.of("buy three items per price of two", "0.98",
+                nPintOfMilk(3), DiscountScheme.THREE_FOR_TWO);
+    }
+
     private static Arguments aSingleItemPricedPerUnit() {
         return Arguments.of("a single item priced per unit", "0.49", Collections.singleton(aPintOfMilk()), DiscountScheme.NO_DISCOUNT);
     }
@@ -71,8 +82,20 @@ class BasketTest {
         return new Product(new BigDecimal("0.49")).oneOf();
     }
 
+    private static Iterable<Item> nPintOfMilk(int n) {
+        return new Product(new BigDecimal("0.49")).anyOf(n);
+    }
+
     private static Item aPackOfDigestives() {
         return new Product(new BigDecimal("1.55")).oneOf();
+    }
+
+    private static Iterable<Item> nPackOfDigestives(int n) {
+        return new Product(new BigDecimal("1.55")).anyOf(n);
+    }
+
+    private static Item aCanOfCoke() {
+        return new Product(new BigDecimal("0.59")).oneOf();
     }
 
     private static WeighedProduct aKiloOfAmericanSweets() {

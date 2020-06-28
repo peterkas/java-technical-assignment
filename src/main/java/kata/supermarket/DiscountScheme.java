@@ -1,7 +1,8 @@
 package kata.supermarket;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Pricing discount schemes
@@ -35,13 +36,37 @@ public enum DiscountScheme {
         }
         switch (this.type) {
             case FIXED_PRICE:
-                if (items.size() > dealQuantity()) {
+                if (items.size() >= dealQuantity()) {
                     // TODO Calculate discount based on Fixed Price every dealQuantity() units
                 }
                 break;
             case PER_VOLUME:
-                if (items.size() > dealQuantity()) {
-                    // TODO Calculate discount based on grouping items by dealQuantity() units
+                if (items.size() >= dealQuantity()) {
+                    // Price without any discount
+                    BigDecimal noDiscPrice = items.stream().map(Item::price)
+                            .reduce(BigDecimal::add)
+                            .orElse(BigDecimal.ZERO);
+                    int numItemsWithNoDiscount = items.size() % dealQuantity();
+                    int numItemsWithDiscount = items.size() - numItemsWithNoDiscount;
+                    Iterator<Item> it = items.iterator();
+                    int disItems = 0;
+                    BigDecimal discPrice = BigDecimal.ZERO;
+                    while (disItems <= numItemsWithDiscount && it.hasNext()) {
+                        List<Item> dealItems = new ArrayList<>();
+                        for (int i = 0; i < dealQuantity(); i++) {
+                            dealItems.add(it.next());
+                            disItems++;
+                        }
+                        // Sort items by price and apply discount to the cheapest
+                        BigDecimal dealPrice = dealItems.stream()
+                                .sorted(Comparator.comparing(Item::price).reversed())
+                                .collect(Collectors.toList()).stream()
+                                .limit(getValue().longValue()).map(Item::price)
+                                .reduce(BigDecimal::add)
+                                .orElse(BigDecimal.ZERO);
+                        discPrice = discPrice.add(dealPrice);
+                    }
+                    discount = noDiscPrice.subtract(discPrice);
                 }
                 break;
             case PER_WEIGHT:
