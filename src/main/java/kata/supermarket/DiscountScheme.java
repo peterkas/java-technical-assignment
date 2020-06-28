@@ -37,12 +37,16 @@ public enum DiscountScheme {
         switch (this.type) {
             case FIXED_PRICE:
                 if (items.size() >= dealQuantity()) {
-                    // TODO Calculate discount based on Fixed Price every dealQuantity() units
+                    BigDecimal noDiscPrice = items.stream().map(Item::price)
+                            .reduce(BigDecimal::add)
+                            .orElse(BigDecimal.ZERO);
+                    int numItemsWithNoDiscount = items.size() % dealQuantity();
+                    int numItemsWithDiscount = items.size() - numItemsWithNoDiscount;
+                    discount = noDiscPrice.subtract(BigDecimal.valueOf(numItemsWithDiscount / dealQuantity()).multiply(getValue()));
                 }
                 break;
             case PER_VOLUME:
                 if (items.size() >= dealQuantity()) {
-                    // Price without any discount
                     BigDecimal noDiscPrice = items.stream().map(Item::price)
                             .reduce(BigDecimal::add)
                             .orElse(BigDecimal.ZERO);
