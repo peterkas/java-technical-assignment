@@ -19,11 +19,32 @@ class WeighedProductTest {
         assertEquals(new BigDecimal(expectedPrice), weighedItem.price());
     }
 
+    @ParameterizedTest
+    @MethodSource
+    void itemFromWeighedProductHasExpectedUnitDiscount(String pricePerKilo, String weightInKilos, String expectedDiscount) {
+        DiscountScheme discountScheme = DiscountScheme.ONE_KG_HALF_PRICE;
+        final WeighedProduct weighedProduct = new WeighedProduct(new BigDecimal(pricePerKilo));
+        final Item weighedItem = weighedProduct.weighing(new BigDecimal(weightInKilos), discountScheme);
+        assertEquals(new BigDecimal(expectedDiscount), weighedItem.discount());
+    }
+
     static Stream<Arguments> itemFromWeighedProductHasExpectedUnitPrice() {
         return Stream.of(
                 Arguments.of("100.00", "1.00", "100.00"),
                 Arguments.of("100.00", "0.33333", "33.33"),
                 Arguments.of("100.00", "0.33335", "33.34"),
+                Arguments.of("100.00", "0", "0.00")
+        );
+    }
+
+    static Stream<Arguments> itemFromWeighedProductHasExpectedUnitDiscount() {
+        return Stream.of(
+                Arguments.of("100.00", "1.00", "50.00"),
+                Arguments.of("100.00", "1.50", "50.00"),
+                Arguments.of("100.00", "2.00", "100.00"),
+                Arguments.of("100.00", "2.50", "100.00"),
+                Arguments.of("100.00", "0.33333", "0.00"),
+                Arguments.of("100.00", "0.99999", "0.00"),
                 Arguments.of("100.00", "0", "0.00")
         );
     }

@@ -28,11 +28,11 @@ public class ItemByWeight implements Item {
         if (discountScheme == null) {
             return null;
         }
-        long discountedKilos = 0;
+        BigDecimal discountedKilos = BigDecimal.ZERO;
         if (this.weightInKilos.compareTo(BigDecimal.valueOf(discountScheme.dealQuantity())) >= 0){
-            discountedKilos = this.weightInKilos.divide(BigDecimal.valueOf(discountScheme.dealQuantity())).longValue();
+            discountedKilos = BigDecimal.valueOf(this.weightInKilos.divide(BigDecimal.valueOf(discountScheme.dealQuantity())).longValue());
         }
-        return discountScheme.getValue().multiply(BigDecimal.valueOf(discountedKilos)).setScale(2, BigDecimal.ROUND_HALF_UP);
+        return product.pricePerKilo().multiply(discountScheme.getValue()).multiply(discountedKilos).setScale(2, BigDecimal.ROUND_HALF_UP);
     }
 
     public long dealQuantity() {
