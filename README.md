@@ -29,13 +29,13 @@ basket.
 
 * You should think about how the relationships between Basket, Item, and Product will need to be refactored to achieve 
 this
-* You should consider how your solution could be extended to provide more complicated discount schemes
+* You should consider how your solution could be extended to provide more complicated discountScheme schemes
 
 First and foremost this is an opportunity for you to demonstrate your _software design_ skills within a small problem 
 space. 
 
 Please read through the description carefully and implement a solution that includes __at least one__ of the pricing 
-discount schemes described.
+discountScheme schemes described.
 
 We would like you spend __no more than one hour__ on this task. 
  

@@ -2,23 +2,28 @@ package kata.supermarket;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Basket {
-    private final List<Item> items;
+    private final Map<DiscountScheme,List<Item>> items;
 
     public Basket() {
-        this.items = new ArrayList<>();
+        this.items = new HashMap<>();
     }
 
     public void add(final Item item) {
-        this.items.add(item);
+        add(item, DiscountScheme.NO_DISCOUNT);
     }
 
-    List<Item> items() {
-        return Collections.unmodifiableList(items);
+    public void add(final Item item, final DiscountScheme discountScheme) {
+        List<Item> itemList = items.get(discountScheme)!=null ? items.get(discountScheme) : new ArrayList<>();
+        itemList.add(item);
+        this.items.put(discountScheme, itemList);
+    }
+
+    Map<DiscountScheme,List<Item>> items() {
+        return Collections.unmodifiableMap(this.items);
     }
 
     public BigDecimal total() {
@@ -26,28 +31,28 @@ public class Basket {
     }
 
     private class TotalCalculator {
-        private final List<Item> items;
+        private final Map<DiscountScheme,List<Item>> items;
 
         TotalCalculator() {
             this.items = items();
         }
 
         private BigDecimal subtotal() {
-            return items.stream().map(Item::price)
+            List<Item> allItems = this.items.values().stream()
+                    .flatMap(List::stream)
+                    .collect(Collectors.toList());
+            return allItems.stream().map(Item::price)
                     .reduce(BigDecimal::add)
                     .orElse(BigDecimal.ZERO)
                     .setScale(2, RoundingMode.HALF_UP);
         }
 
-        /**
-         * TODO: This could be a good place to apply the results of
-         *  the discount calculations.
-         *  It is not likely to be the best place to do those calculations.
-         *  Think about how Basket could interact with something
-         *  which provides that functionality.
-         */
         private BigDecimal discounts() {
-            return BigDecimal.ZERO;
+            BigDecimal discountsToApply = BigDecimal.ZERO;
+            for (DiscountScheme discountScheme : this.items.keySet()) {
+                discountsToApply = discountsToApply.add(discountScheme.apply(items.get(discountScheme)));
+            }
+            return discountsToApply;
         }
 
         private BigDecimal calculate() {
