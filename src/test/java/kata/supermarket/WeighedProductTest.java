@@ -22,9 +22,8 @@ class WeighedProductTest {
     @ParameterizedTest
     @MethodSource
     void itemFromWeighedProductHasExpectedUnitDiscount(String pricePerKilo, String weightInKilos, String expectedDiscount) {
-        DiscountScheme discountScheme = DiscountScheme.ONE_KG_HALF_PRICE;
         final WeighedProduct weighedProduct = new WeighedProduct(new BigDecimal(pricePerKilo));
-        final Item weighedItem = weighedProduct.weighing(new BigDecimal(weightInKilos), discountScheme);
+        final Item weighedItem = weighedProduct.weighing(new BigDecimal(weightInKilos), oneKgHalfPrice());
         assertEquals(new BigDecimal(expectedDiscount), weighedItem.discount());
     }
 
@@ -47,6 +46,10 @@ class WeighedProductTest {
                 Arguments.of("100.00", "0.99999", "0.00"),
                 Arguments.of("100.00", "0", "0.00")
         );
+    }
+
+    private static DiscountScheme oneKgHalfPrice() {
+        return new DefaultDiscountScheme(BigDecimal.valueOf(0.5),1);
     }
 
 }

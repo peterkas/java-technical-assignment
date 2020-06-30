@@ -37,51 +37,72 @@ class BasketTest {
         );
     }
 
+    private static DiscountScheme noDiscount() {
+        return new DefaultDiscountScheme(BigDecimal.ONE,1);
+    }
+
+    private static DiscountScheme buyOneGetOne() {
+        return new DiscountSchemeByVolume(BigDecimal.ONE,2);
+    }
+
+    private static DiscountScheme twoForOnePound() {
+        return new DiscountSchemeByFixedPrice(BigDecimal.ONE,2);
+    }
+
+    private static DiscountScheme threeForTwo() {
+        return new DiscountSchemeByVolume(BigDecimal.valueOf(2),3);
+    }
+
+    private static DiscountScheme oneKgHalfPrice() {
+        return new DiscountSchemeByWeight(BigDecimal.valueOf(0.5),1);
+    }
+
     private static Arguments aSingleItemPricedByWeight() {
         return Arguments.of("a single weighed item", "1.25", Collections.singleton(twoFiftyGramsOfAmericanSweets()),
-                DiscountScheme.NO_DISCOUNT);
+                noDiscount());
     }
 
     private static Arguments multipleItemsPricedByWeight() {
         return Arguments.of("multiple weighed items", "1.85",
                 Arrays.asList(twoFiftyGramsOfAmericanSweets(), twoHundredGramsOfPickAndMix()),
-                DiscountScheme.NO_DISCOUNT
+                noDiscount()
         );
     }
 
     private static Arguments vegetablesHalfPriceByWeight() {
         return Arguments.of("vegetables weighed items with half price discount per kilo", "2.99",
-                Arrays.asList(aKiloAndTwoFiftyGramsOfPotatos(DiscountScheme.ONE_KG_HALF_PRICE)),
-                DiscountScheme.ONE_KG_HALF_PRICE
+                Arrays.asList(aKiloAndTwoFiftyGramsOfPotatos(oneKgHalfPrice())),
+                oneKgHalfPrice()
         );
     }
 
     private static Arguments multipleItemsPricedPerUnit() {
         return Arguments.of("multiple items priced per unit", "2.04",
-                Arrays.asList(aPackOfDigestives(), aPintOfMilk()), DiscountScheme.NO_DISCOUNT);
+                Arrays.asList(aPackOfDigestives(), aPintOfMilk()), noDiscount());
     }
 
     private static Arguments buyOneGetOneFree() {
         return Arguments.of("buy two items per price of one", "1.55",
-                nPackOfDigestives(2), DiscountScheme.BUY_ONE_GET_ONE);
+                nPackOfDigestives(2), buyOneGetOne());
     }
 
     private static Arguments buyTwoItemsForOnePound() {
         return Arguments.of("buy two items for one pound", "1.00",
-                Arrays.asList(aCanOfCoke(), aCanOfCoke()), DiscountScheme.TWO_FOR_ONE_POUND);
+                Arrays.asList(aCanOfCoke(), aCanOfCoke()), twoForOnePound());
     }
 
     private static Arguments buyThreeItemsPerPriceOfTwo() {
         return Arguments.of("buy three items per price of two", "0.98",
-                nPintOfMilk(3), DiscountScheme.THREE_FOR_TWO);
+                nPintOfMilk(3), threeForTwo());
     }
 
     private static Arguments aSingleItemPricedPerUnit() {
-        return Arguments.of("a single item priced per unit", "0.49", Collections.singleton(aPintOfMilk()), DiscountScheme.NO_DISCOUNT);
+        return Arguments.of("a single item priced per unit", "0.49", Collections.singleton(aPintOfMilk()),
+                noDiscount());
     }
 
     private static Arguments noItems() {
-        return Arguments.of("no items", "0.00", Collections.emptyList(), DiscountScheme.NO_DISCOUNT);
+        return Arguments.of("no items", "0.00", Collections.emptyList(), noDiscount());
     }
 
     private static Item aPintOfMilk() {

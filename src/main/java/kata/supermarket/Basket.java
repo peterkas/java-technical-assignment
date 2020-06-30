@@ -6,6 +6,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Basket {
+    private static final DiscountScheme NO_DISCOUNT = new DefaultDiscountScheme(BigDecimal.ONE,1);
+
     private final Map<DiscountScheme,List<Item>> items;
 
     public Basket() {
@@ -13,7 +15,7 @@ public class Basket {
     }
 
     public void add(final Item item) {
-        add(item, DiscountScheme.NO_DISCOUNT);
+        add(item, NO_DISCOUNT);
     }
 
     public void add(final Item item, final DiscountScheme discountScheme) {
@@ -48,6 +50,7 @@ public class Basket {
         }
 
         private BigDecimal discounts() {
+
             BigDecimal discountsToApply = BigDecimal.ZERO;
             for (DiscountScheme discountScheme : this.items.keySet()) {
                 discountsToApply = discountsToApply.add(discountScheme.apply(items.get(discountScheme)));
